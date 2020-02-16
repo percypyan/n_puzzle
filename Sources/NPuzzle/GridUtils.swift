@@ -1,10 +1,14 @@
-//
-//  grid_utils.swift
-//  n_puzzle
-//
-//  Created by Perceval Archimbaud on 02/02/2020.
-//  Copyright © 2020 Archimbaud. All rights reserved.
-//
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   GridUtils.swift                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: parchimb <parchimb@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/02/16 17:53:44 by parchimb          #+#    #+#             */
+/*   Updated: 2020/02/16 17:53:53 by parchimb         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 import Foundation
 

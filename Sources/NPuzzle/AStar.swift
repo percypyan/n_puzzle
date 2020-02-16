@@ -1,10 +1,14 @@
-//
-//  a_star.swift
-//  n_puzzle
-//
-//  Created by Perceval Archimbaud on 02/02/2020.
-//  Copyright © 2020 Archimbaud. All rights reserved.
-//
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   AStar.swift                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: parchimb <parchimb@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/02/16 17:54:07 by parchimb          #+#    #+#             */
+/*   Updated: 2020/02/16 17:54:08 by parchimb         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 import Foundation
 
@@ -90,7 +94,7 @@ func runAStarWith(grid: [[Int]], andHeuristicFunction heuristicFunction: @escapi
 func printResultReport(result: AStarResult, onOneLine: Bool = false) {
 	let formatter = NumberFormatter()
 	formatter.maximumFractionDigits = 3
-	
+
 	if onOneLine {
 		print("\(result.solution) - \(result.nodesExplored) states - \(formatter.string(from: NSNumber(value: result.timeElapsed))!)s")
 	} else {

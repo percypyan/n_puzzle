@@ -1,10 +1,14 @@
-//
-//  grid_state.swift
-//  n_puzzle
-//
-//  Created by Perceval Archimbaud on 02/02/2020.
-//  Copyright © 2020 Archimbaud. All rights reserved.
-//
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   GridState.swift                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: parchimb <parchimb@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2020/02/16 17:53:57 by parchimb          #+#    #+#             */
+/*   Updated: 2020/02/16 17:53:59 by parchimb         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 import Foundation
 
