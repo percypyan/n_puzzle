@@ -18,6 +18,7 @@ func insertInRightPosition(states: [GridState], state: GridState, isVerbose: Boo
 
 struct AStarResult {
 	let nodesExplored: Int
+	let maxKnownNodes: Int
 	let timeElapsed: TimeInterval
 	let solution: String
 }
@@ -28,12 +29,13 @@ func runAStarWith(grid: [[Int]], andHeuristicFunction heuristicFunction: @escapi
 	var openedStates: [GridState] = [GridState(grid: grid, heuristicFunction: heuristicFunction)]
 	var closedStates: [GridState] = []
 	var finaleState: GridState? = nil
-	var processedState = 0
+	var nodesExplored = 0
+	var maxKnownNodes = 1
 	while openedStates.count != 0 && finaleState == nil {
-		processedState += 1
+		nodesExplored += 1
 		let evaluatedState = openedStates.removeFirst()
 		if isVerbose {
-			print("Evaluate node #\(processedState):")
+			print("Evaluate node #\(nodesExplored):")
 			print(grid: evaluatedState.grid)
 			print("HW: \(evaluatedState.heuristicWeight) | PW: \(evaluatedState.pathWeight) | TW: \(evaluatedState.totalWeight)")
 		}
@@ -60,6 +62,10 @@ func runAStarWith(grid: [[Int]], andHeuristicFunction heuristicFunction: @escapi
 			}
 		}
 		closedStates.append(evaluatedState)
+		let currentKnownNodes = closedStates.count + openedStates.count
+		if currentKnownNodes > maxKnownNodes {
+			maxKnownNodes = currentKnownNodes
+		}
 		if isVerbose {
 			print("Close this node.\n")
 			print("Opened nodes: \(openedStates.count) | Closed nodes: \(closedStates.count)\n")
@@ -78,7 +84,7 @@ func runAStarWith(grid: [[Int]], andHeuristicFunction heuristicFunction: @escapi
 	} else {
 		path = "ø"
 	}
-	return AStarResult(nodesExplored: processedState, timeElapsed: timeElapsed, solution: path)
+	return AStarResult(nodesExplored: nodesExplored, maxKnownNodes: maxKnownNodes, timeElapsed: timeElapsed, solution: path)
 }
 
 func printResultReport(result: AStarResult, onOneLine: Bool = false) {
@@ -91,6 +97,7 @@ func printResultReport(result: AStarResult, onOneLine: Bool = false) {
 		print("Puzzle solvable in \(result.solution.count) moves.")
 		print("Solution: \(result.solution).")
 		print("Nodes explored: \(result.nodesExplored).")
+		print("Maximum number of simultaneous known nodes: \(result.maxKnownNodes).")
 		print("Time elapsed: \(formatter.string(from: NSNumber(value: result.timeElapsed))!)s.")
 	}
 }
