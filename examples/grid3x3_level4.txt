@@ -1,0 +1,8 @@
+# Values for debug executable.
+# Misplaced | 12463 states - 81,454s
+# Manhattan | 742 states - 0,353s
+# Linear | 548 states - 0,246s
+3
+5 2 4
+1 6 8
+3 7 0

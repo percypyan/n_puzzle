@@ -1,0 +1,8 @@
+# This grid cannot be solved.
+# Only grid with an even count of inversions (reading top to bottom and left to right) can be solved.
+3
+3 2 6
+1 4 0 # Empty tile isn't considered for the count.
+8 7 5
+# Given this grid with have the following list: 3, 2, 6, 1, 4, 8, 7, 5.
+# There is 9 inversions: 3-2, 3-1, 2-1, 6-1, 6-4, 6-5, 8-7, 8-5 and 7-5.

@@ -1,0 +1,6 @@
+# This is one of the two the hardest 3x3 solvable grid.
+# There a solvable in 31 moves.
+3
+8 6 7
+2 5 4
+3 0 1
