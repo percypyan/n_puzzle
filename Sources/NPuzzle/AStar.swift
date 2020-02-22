@@ -27,10 +27,17 @@ struct AStarResult {
 	let solution: String
 }
 
-func runAStarWith(grid: [[Int]], andHeuristicFunction heuristicFunction: @escaping ([[Int]]) -> Int, inVerboseMode isVerbose: Bool = false) -> AStarResult {
+struct AStarConfig {
+	let heuristicFunction: ([[Int]]) -> Int
+	let useIterativeDeepening: Bool
+	let isVerbose: Bool
+}
+
+func runAStarWith(grid: [[Int]], andConfig config: AStarConfig) -> AStarResult {
 	let startTime = Date()
 
-	var openedStates: [GridState] = [GridState(grid: grid, heuristicFunction: heuristicFunction)]
+	var openedStates: [GridState] = [GridState(grid: grid, heuristicFunction: config.heuristicFunction)]
+	var maxWeight = openedStates.first!.heuristicWeight
 	var closedStates: [GridState] = []
 	var finaleState: GridState? = nil
 	var nodesExplored = 0
@@ -38,39 +45,49 @@ func runAStarWith(grid: [[Int]], andHeuristicFunction heuristicFunction: @escapi
 	while openedStates.count != 0 && finaleState == nil {
 		nodesExplored += 1
 		let evaluatedState = openedStates.removeFirst()
-		if isVerbose {
+		if config.isVerbose {
 			print("Evaluate node #\(nodesExplored):")
 			print(grid: evaluatedState.grid)
 			print("HW: \(evaluatedState.heuristicWeight) | PW: \(evaluatedState.pathWeight) | TW: \(evaluatedState.totalWeight)")
 		}
 		if evaluatedState.isFinaleState {
-			if isVerbose { print("This node represent a solved puzzle. Search completed.\n") }
+			if config.isVerbose { print("This node represent a solved puzzle. Search completed.\n") }
 			finaleState = evaluatedState
 			break
 		}
 
 		let children = evaluatedState.getChildren()
+		var minOverWeightedChild: GridState? = nil
+		var openedChildrenCount = 0
 		for child in children {
 			if let index = openedStates.firstIndex(where: { $0.uid == child.uid }) {
-				if openedStates[index].totalWeight > child.totalWeight {
-					openedStates.remove(at: index)
-					openedStates = insertInRightPosition(states: openedStates, state: child, isVerbose: isVerbose)
-				}
+				guard openedStates[index].totalWeight > child.totalWeight else { continue }
+				openedStates.remove(at: index)
 			} else if let index = closedStates.firstIndex(where: { $0.uid == child.uid }) {
-				if closedStates[index].totalWeight > child.totalWeight {
-					closedStates.remove(at: index)
-					openedStates = insertInRightPosition(states: openedStates, state: child, isVerbose: isVerbose)
-				}
-			} else {
-				openedStates = insertInRightPosition(states: openedStates, state: child, isVerbose: isVerbose)
+				guard closedStates[index].totalWeight > child.totalWeight else { continue }
+				closedStates.remove(at: index)
 			}
+			if !config.useIterativeDeepening || child.heuristicWeight <= maxWeight {
+				openedStates = insertInRightPosition(states: openedStates, state: child, isVerbose: config.isVerbose)
+				openedChildrenCount += 1
+			} else {
+				minOverWeightedChild = child.heuristicWeight < minOverWeightedChild?.heuristicWeight ?? (child.heuristicWeight + 1)
+					? child
+					: minOverWeightedChild
+			}
+		}
+		if let maxOWChild = minOverWeightedChild, openedChildrenCount == 0 {
+			openedStates = insertInRightPosition(states: openedStates, state: maxOWChild, isVerbose: config.isVerbose)
 		}
 		closedStates.append(evaluatedState)
 		let currentKnownNodes = closedStates.count + openedStates.count
 		if currentKnownNodes > maxKnownNodes {
 			maxKnownNodes = currentKnownNodes
 		}
-		if isVerbose {
+		if (config.useIterativeDeepening) {
+			maxWeight = minOverWeightedChild?.heuristicWeight ?? maxWeight
+		}
+		if config.isVerbose {
 			print("Close this node.\n")
 			print("Opened nodes: \(openedStates.count) | Closed nodes: \(closedStates.count)\n")
 		}

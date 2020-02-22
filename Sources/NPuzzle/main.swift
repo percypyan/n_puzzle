@@ -19,6 +19,7 @@ let heuristic = AvailableHeuristicMethods[options.first(where: { $0.short == "h"
 let isVerboseModeActivated = (options.first(where: { $0.short == "v" })?.value ?? "false") == "true"
 let fileName = options.first(where: { $0.short == "f" })?.value ?? nil
 let isHelpRequested = (options.first(where: { $0.long == "help" })?.value ?? "false") == "true"
+let useIterativeDeepening = (options.first(where: { $0.long == "ida" })?.value ?? "false") == "true"
 
 if isHelpRequested {
 	printUsage()
@@ -41,6 +42,10 @@ if let grid = grid {
 		print("\nThis grid cannot be solved.")
 	} else {
 		print("\nStart resolution using: \(heuristic.label)\n")
-		printResultReport(result: runAStarWith(grid: grid, andHeuristicFunction: heuristic.method, inVerboseMode: isVerboseModeActivated))
+		printResultReport(result: runAStarWith(grid: grid, andConfig: AStarConfig(
+			heuristicFunction: heuristic.method,
+			useIterativeDeepening: useIterativeDeepening,
+			isVerbose: isVerboseModeActivated
+		)))
 	}
 }

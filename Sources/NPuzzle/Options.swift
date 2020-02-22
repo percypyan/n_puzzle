@@ -33,6 +33,7 @@ let availableOptions: [CommandLineOption] = [
 	CommandLineOption(short: "s", long: "size", isValid: { Int($0) != nil && Int($0)! >= 3 }),
 	CommandLineOption(short: "h", long: "heuristic", isValid: { AvailableHeuristicMethods.keys.contains($0) }),
 	CommandLineOption(short: "v", long: "verbose", isBoolean: true),
+	CommandLineOption(short: "i", long: "ida", isBoolean: true),
 	CommandLineOption(long: "help", isBoolean: true)
 ]
 
