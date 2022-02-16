@@ -12,6 +12,20 @@
 
 import Foundation
 
+// Those heuristic functions are based on an incorrect final order.
+// Should be:
+// 1 2 3
+// 8 - 4
+// 7 6 5
+// Currently is:
+// 1 2 3
+// 4 5 6
+// 7 8 -
+
+// We migth use an array with correct coordinate:
+// - index: is the tile number (Int)
+// - value: is the coordinate object
+
 struct HeuristicMethod {
 	let method: ([[Int]]) -> Int
 	let label: String
@@ -57,6 +71,7 @@ func linearConflict(grid: [[Int]]) -> Int {
 		for x in 0...(grid[y].count - 1) {
 			if grid[y][x] != 0 && grid[y][x] != y * grid.count + x + 1 {
 				realPositions.append(GridPosition(x: x, y: y))
+				// Goal position never change, we should compute it only once.
 				goalPositions.append(GridPosition(
 					x: (grid[y][x] - 1) % grid[y].count,
 					y: (grid[y][x] - 1) / 3
