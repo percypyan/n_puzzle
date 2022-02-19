@@ -12,9 +12,12 @@
 
 import Foundation
 
+let numberFormatter = NumberFormatter()
+
 func insertInRightPosition(states: [GridState], state: GridState, isVerbose: Bool = false) -> [GridState] {
 	var newStates = states
-	let index = states.firstIndex(where: { $0.totalWeight >= state.totalWeight }) ?? states.count
+	let index = binarySearchGridStateInsertionIndex(forArray: states, totalWeight: state.totalWeight)
+//	let index = newStates.firstIndex(where: { $0.totalWeight >= state.totalWeight }) ?? states.count
 	newStates.insert(state, at: index)
 	if isVerbose { print("Add child induce by \(state.executedMove!) to opened nodes at index \(index).") }
 	return newStates
@@ -60,10 +63,10 @@ func runAStarWith(grid: [[Int]], andConfig config: AStarConfig) -> AStarResult {
 		var minOverWeightedChild: GridState? = nil
 		var openedChildrenCount = 0
 		for child in children {
-			if let index = openedStates.firstIndex(where: { $0.uid == child.uid }) {
+			if let index = openedStates.firstIndex(where: { $0.uid == child.uid }) { // Last O(n)
 				guard openedStates[index].totalWeight > child.totalWeight else { continue }
 				openedStates.remove(at: index)
-			} else if let index = closedStates.firstIndex(where: { $0.uid == child.uid }) {
+			} else if let index = binarySearchUIDIndex(forArray: closedStates, uid: child.uid) { // closedStates.firstIndex(where: { $0.uid == child.uid }) {
 				guard closedStates[index].totalWeight > child.totalWeight else { continue }
 				closedStates.remove(at: index)
 			}
@@ -79,7 +82,11 @@ func runAStarWith(grid: [[Int]], andConfig config: AStarConfig) -> AStarResult {
 		if let maxOWChild = minOverWeightedChild, openedChildrenCount == 0 {
 			openedStates = insertInRightPosition(states: openedStates, state: maxOWChild, isVerbose: config.isVerbose)
 		}
-		closedStates.append(evaluatedState)
+		
+		// Keep closed states ordered by UID.
+		let insertionIndex = binarySearchGridStateInsertionIndex(forArray: closedStates, uid: evaluatedState.uid)
+		closedStates.insert(evaluatedState, at: insertionIndex)
+		
 		let currentKnownNodes = closedStates.count + openedStates.count
 		if currentKnownNodes > maxKnownNodes {
 			maxKnownNodes = currentKnownNodes
@@ -87,6 +94,7 @@ func runAStarWith(grid: [[Int]], andConfig config: AStarConfig) -> AStarResult {
 		if (config.useIterativeDeepening) {
 			maxWeight = minOverWeightedChild?.heuristicWeight ?? maxWeight
 		}
+		
 		if config.isVerbose {
 			print("Close this node.\n")
 			print("Opened nodes: \(openedStates.count) | Closed nodes: \(closedStates.count)\n")
