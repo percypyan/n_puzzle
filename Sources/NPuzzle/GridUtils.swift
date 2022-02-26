@@ -12,6 +12,8 @@
 
 import Foundation
 
+typealias Grid = [[Int]]
+
 struct GridPosition {
 	var x: Int
 	var y: Int
@@ -24,7 +26,7 @@ enum Move: String {
 	case right = "R"
 }
 
-func isGridSolvable(_ grid: [[Int]]) -> Bool {
+func isGridSolvable(_ grid: Grid) -> Bool {
 	var inversionsCount = 0
 	var tilesList: [Int] = []
 	for y in 0..<grid.count {
@@ -48,8 +50,8 @@ func isGridSolvable(_ grid: [[Int]]) -> Bool {
 	}
 }
 
-func generateGrid(ofSize size: Int) -> [[Int]] {
-	var grid: [[Int]] = []
+func generateGrid(ofSize size: Int) -> Grid {
+	var grid: Grid = []
 	var valuesList: [Int] = []
 	for i in 0...(size * size - 1) {
 		valuesList.append(i)
@@ -71,7 +73,37 @@ func generateGrid(ofSize size: Int) -> [[Int]] {
 	return grid
 }
 
-func print(grid: [[Int]]) {
+func computeGoalGrid(ofSize size: Int) -> Grid {
+	// Create a grid filled with 0
+	var grid = Grid(repeating: [Int](repeating: 0, count: size), count: size)
+	
+	var x = 0
+	var y = 0
+	var xIncrement = 1
+	var yIncrement = 0
+	
+	let tilesCount = size * size
+	for tile in 1..<tilesCount {
+		grid[y][x] = tile
+		
+		// Adjust increments if needed
+		if xIncrement != 0 && (x + xIncrement == size || x + xIncrement < 0 || grid[y][x + xIncrement] != 0) {
+			xIncrement = 0
+			yIncrement = y == 0 || grid[y - 1][x] != 0 ? 1 : -1
+		} else if yIncrement != 0 && (y + yIncrement == size || y + yIncrement < 0 || grid[y + yIncrement][x] != 0) {
+			yIncrement = 0
+			xIncrement = x == 0 || grid[y][x - 1] != 0 ? 1 : -1
+		}
+		
+		// Increment coordinates
+		x += xIncrement
+		y += yIncrement
+	}
+	
+	return grid
+}
+
+func print(grid: Grid) {
 	let maxValueLenth = "\(grid.count * grid.count - 1)".count
 	let formatter = NumberFormatter()
 	formatter.formatWidth = maxValueLenth
@@ -85,7 +117,7 @@ func print(grid: [[Int]]) {
 	}
 }
 
-func apply(move: Move, toGrid grid: [[Int]], withZeroPosition zeroPosition: GridPosition) -> [[Int]] {
+func apply(move: Move, toGrid grid: Grid, withZeroPosition zeroPosition: GridPosition) -> Grid {
 	var newGrid = grid
 	var newZeroPosition = zeroPosition
 	switch move {

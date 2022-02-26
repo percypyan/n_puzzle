@@ -17,7 +17,7 @@ class GridState {
 	let grid: [[Int]]
 	let executedMove: Move?
 	var parent: GridState?
-	let heuristicFunction: ([[Int]]) -> Int
+	let heuristicRunner: HeuristicRunner
 	let heuristicWeight: Int
 	var pathWeight: Int
 	let uid: String
@@ -30,12 +30,12 @@ class GridState {
 		get { return heuristicWeight == 0 }
 	}
 
-	private init(grid: [[Int]], parent: GridState?, heuristicFunction: (([[Int]]) -> Int)?, executedMove: Move?) {
+	private init(grid: [[Int]], parent: GridState?, heuristicRunner: HeuristicRunner?, executedMove: Move?) {
 		self.grid = grid
 		self.parent = parent
-		self.heuristicFunction = parent?.heuristicFunction ?? heuristicFunction!
+		self.heuristicRunner = parent?.heuristicRunner ?? heuristicRunner!
 		self.pathWeight = parent != nil ? parent!.pathWeight + 1 : 0
-		self.heuristicWeight = self.heuristicFunction(grid)
+		self.heuristicWeight = self.heuristicRunner.computeHeuristicWeight(forGrid: grid)
 		self.executedMove = executedMove
 
 		var uid = ""
@@ -52,11 +52,11 @@ class GridState {
 		self.uid = String(uid.dropFirst())
 	}
 
-	convenience init(grid: [[Int]], heuristicFunction: @escaping ([[Int]]) -> Int) {
+	convenience init(grid: [[Int]], heuristicRunner: HeuristicRunner) {
 		self.init(
 			grid: grid,
 			parent: nil,
-			heuristicFunction: heuristicFunction,
+			heuristicRunner: heuristicRunner,
 			executedMove: nil
 		)
 	}
@@ -65,7 +65,7 @@ class GridState {
 		self.init(
 			grid: apply(move: move, toGrid: parent.grid, withZeroPosition: parent.zeroPosition),
 			parent: parent,
-			heuristicFunction: nil,
+			heuristicRunner: nil,
 			executedMove: move
 		)
 	}

@@ -41,6 +41,9 @@ if let grid = grid {
 	if isGridSolvable(grid) == false {
 		print("\nThis grid cannot be solved.")
 	} else {
+		if useIterativeDeepening {
+			print("\nWarning: the use of iterative deepening greatly improve processing speed, but can lead to a non-optimal solution.")
+		}
 		print("\nStart resolution using: \(heuristic.label)\n")
 		printResultReport(result: runAStarWith(grid: grid, andConfig: AStarConfig(
 			heuristicFunction: heuristic.method,

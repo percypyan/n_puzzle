@@ -80,7 +80,7 @@
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = "/Users/percypyan/Developer/projects/42/n_puzzle/examples/grid3x3_level1.txt"
+            argument = "/Users/percypyan/Developer/projects/42/n_puzzle/examples/hardest3x3.txt"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

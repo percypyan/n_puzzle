@@ -26,18 +26,36 @@ import Foundation
 // - index: is the tile number (Int)
 // - value: is the coordinate object
 
-struct HeuristicMethod {
-	let method: ([[Int]]) -> Int
+typealias HeuristicMethod = (Grid, Grid) -> Int
+
+struct HeuristicMethodChoice {
+	let method: (Grid, Grid) -> Int
 	let label: String
 }
 
 let AvailableHeuristicMethods = [
-	"misplaced": HeuristicMethod(method: misplacedTiles, label: "Misplaced tiles"),
-	"manhattan": HeuristicMethod(method: manhattanDistance, label: "Manhattan distance"),
-	"linear": HeuristicMethod(method: linearConflict, label: "Manhattan distance with linear conflicts")
+	"misplaced": HeuristicMethodChoice(method: misplacedTiles, label: "Misplaced tiles"),
+	"manhattan": HeuristicMethodChoice(method: manhattanDistance, label: "Manhattan distance"),
+	"linear": HeuristicMethodChoice(method: linearConflict, label: "Manhattan distance with linear conflicts")
 ]
 
-func misplacedTiles(grid: [[Int]]) -> Int {
+class HeuristicRunner {
+	
+	let heuristicMethod: HeuristicMethod
+	let goalGrid: Grid
+	
+	init(heuristicMethod: @escaping HeuristicMethod, goalGrid: Grid) {
+		self.heuristicMethod = heuristicMethod
+		self.goalGrid = goalGrid
+	}
+	
+	func computeHeuristicWeight(forGrid grid: Grid) -> Int {
+		return self.heuristicMethod(grid, goalGrid)
+	}
+	
+}
+
+func misplacedTiles(grid: Grid, goalGrid: Grid) -> Int {
 	var misplaced = 0
 	for y in 0...(grid.count - 1) {
 		for x in 0...(grid[y].count - 1) {
@@ -49,7 +67,7 @@ func misplacedTiles(grid: [[Int]]) -> Int {
 	return misplaced
 }
 
-func manhattanDistance(grid: [[Int]]) -> Int {
+func manhattanDistance(grid: Grid, goalGrid: Grid) -> Int {
 	var heuristic = 0
 	for y in 0...(grid.count - 1) {
 		for x in 0...(grid[y].count - 1) {
@@ -63,7 +81,7 @@ func manhattanDistance(grid: [[Int]]) -> Int {
 	return heuristic
 }
 
-func linearConflict(grid: [[Int]]) -> Int {
+func linearConflict(grid: Grid, goalGrid: Grid) -> Int {
 	var heuristic = 0
 	var realPositions: [GridPosition] = []
 	var goalPositions: [GridPosition] = []
@@ -103,11 +121,11 @@ func linearConflict(grid: [[Int]]) -> Int {
 	return heuristic
 }
 
-func maxSwapMisplaced(grid: [[Int]]) -> Int {
+func maxSwapMisplaced(grid: Grid, goalGrid: Grid) -> Int {
 	var misplaced = 0
 	for y in 0...(grid.count - 1) {
 		for x in 0...(grid[y].count - 1) {
-			if grid[y][x] != y * grid.count + x + 1 && grid[y][x] != 0 {
+			if grid[y][x] != goalGrid[y][x] {
 				misplaced += 1
 			}
 		}

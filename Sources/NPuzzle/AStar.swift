@@ -31,20 +31,23 @@ struct AStarResult {
 }
 
 struct AStarConfig {
-	let heuristicFunction: ([[Int]]) -> Int
+	let heuristicFunction: HeuristicMethod
 	let useIterativeDeepening: Bool
 	let isVerbose: Bool
 }
 
-func runAStarWith(grid: [[Int]], andConfig config: AStarConfig) -> AStarResult {
+func runAStarWith(grid: Grid, andConfig config: AStarConfig) -> AStarResult {
 	let startTime = Date()
 
-	var openedStates: [GridState] = [GridState(grid: grid, heuristicFunction: config.heuristicFunction)]
+	let heuristicRunner = HeuristicRunner(heuristicMethod: config.heuristicFunction, goalGrid: computeGoalGrid(ofSize: grid.count))
+	
+	var openedStates: [GridState] = [GridState(grid: grid, heuristicRunner: heuristicRunner)]
 	var maxWeight = openedStates.first!.heuristicWeight
 	var closedStates: [GridState] = []
 	var finaleState: GridState? = nil
 	var nodesExplored = 0
 	var maxKnownNodes = 1
+	
 	while openedStates.count != 0 && finaleState == nil {
 		nodesExplored += 1
 		let evaluatedState = openedStates.removeFirst()
@@ -66,7 +69,7 @@ func runAStarWith(grid: [[Int]], andConfig config: AStarConfig) -> AStarResult {
 			if let index = openedStates.firstIndex(where: { $0.uid == child.uid }) { // Last O(n)
 				guard openedStates[index].totalWeight > child.totalWeight else { continue }
 				openedStates.remove(at: index)
-			} else if let index = binarySearchUIDIndex(forArray: closedStates, uid: child.uid) { // closedStates.firstIndex(where: { $0.uid == child.uid }) {
+			} else if let index = binarySearchUIDIndex(forArray: closedStates, uid: child.uid) {
 				guard closedStates[index].totalWeight > child.totalWeight else { continue }
 				closedStates.remove(at: index)
 			}
